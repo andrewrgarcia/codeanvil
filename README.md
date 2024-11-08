@@ -4,6 +4,8 @@
 
 ## Features
 
+![](codeanvil_activity_monthly_activity_metrics_for_andrewrgarcia.png)
+
 - **Pulse**: Measures the average commit frequency across all repositories, showing the "heartbeat" of activity.
 - **Activity Heat**: Calculates contribution depth based on rolling commits.
 - **Strikes**: Tracks variability in commit frequency across repositories, capturing how much commit activity fluctuates over time.
@@ -43,11 +45,16 @@
 2. **Generate New Token**:
    - Click on **"Generate new token"** in the top right corner.
 
+![](img/gh_token.png)
+
 3. **Configure Token Permissions**:
    - Enter a name for your token (e.g., "CodeAnvil Token").
    - Set the expiration date as needed.
    - Under **"Select scopes"**, check the box for `repo` (for accessing private repositories if needed) and `read:user` to read public repository data.
-   
+
+![](img/gh_scopes_1.png)
+![](img/gh_scopes_2.png)
+
 4. **Generate and Save the Token**:
    - Click **"Generate token"** at the bottom of the page.
    - Copy the token **immediately** and save it securely, as you won’t be able to see it again.
