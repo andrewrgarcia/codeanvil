@@ -1,6 +1,6 @@
 <img src="img/codeanvil.webp" alt="Anvil in Grasslands" width="250" height="auto">
 
-# CodeAnvil - The Micromanager's Dream for GitHub Activity Tracking
+# CodeAnvil - A Micromanager's Dream for GitHub Activity Tracking
 
 **CodeAnvil** is the ultimate Python tool for obsessively tracking and analyzing GitHub activity across every single repository in a user’s account. Why settle for vague productivity metrics when you can go deep? CodeAnvil captures your “coding pulse,” activity heat, and consistency score to visualize your GitHub habits. Great for start-up founders who *really* want to stay on top of things!
 
