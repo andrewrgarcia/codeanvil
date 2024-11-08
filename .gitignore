@@ -1,4 +1,10 @@
+__pycache__
+
+# my key
+config_arg.py
+
+# files-wzrd
 *FilesHere*
 make.txt
 show.txt
-config_arg.py
+

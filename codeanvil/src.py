@@ -1,92 +1,83 @@
 import requests
 import pandas as pd
 import matplotlib.pyplot as plt
-from datetime import datetime
+from datetime import datetime, timedelta
 import numpy as np
-# from config import GITHUB_USER, TOKEN
-from config_arg import GITHUB_USER, TOKEN
+from codeanvil.keys.config_arg import GITHUB_USER, TOKEN
 
-def fetch_all_repos():
-    """Fetches all repositories for the specified user."""
+def fetch_recent_commits_from_events(since_days=30):
+    """Fetches recent commit data for the user across all repos using GitHub Events API."""
     headers = {"Authorization": f"token {TOKEN}"}
-    url = f"https://api.github.com/users/{GITHUB_USER}/repos"
-    repos = []
-    
+    url = f"https://api.github.com/users/{GITHUB_USER}/events/public"
+    recent_commits = []
+    cutoff_date = datetime.now() - timedelta(days=since_days)
+
     while url:
         response = requests.get(url, headers=headers)
         response.raise_for_status()
-        data = response.json()
-        repos.extend([repo['name'] for repo in data if not repo['fork']])  # Exclude forks
+        events = response.json()
+        
+        for event in events:
+            # Filter for push events only
+            if event["type"] == "PushEvent":
+                for commit in event["payload"]["commits"]:
+                    commit_date = datetime.strptime(event["created_at"], "%Y-%m-%dT%H:%M:%SZ")
+                    if commit_date < cutoff_date:
+                        # Stop if the event is older than the cutoff date
+                        return pd.DataFrame(recent_commits, columns=["date"])
+                    recent_commits.append(commit_date.date())
+
+        # Pagination: Get the next page if available
         url = response.links.get('next', {}).get('url')
     
-    return repos
+    return pd.DataFrame(recent_commits, columns=["date"])
 
-def fetch_commit_data(repo):
-    """Fetches commit data for a single repository and returns a DataFrame of commit dates."""
-    headers = {"Authorization": f"token {TOKEN}"}
-    url = f"https://api.github.com/repos/{GITHUB_USER}/{repo}/commits"
-    params = {"per_page": 100}
-    commit_dates = []
-
-    while url:
-        response = requests.get(url, headers=headers, params=params)
-        response.raise_for_status()
-        data = response.json()
-        for commit in data:
-            commit_dates.append(commit['commit']['author']['date'])
-        # Get the next page of results if available
-        url = response.links.get('next', {}).get('url')
-
-    return pd.DataFrame(commit_dates, columns=["date"])
-
-def aggregate_commit_data():
-    """Aggregates commit data across all repositories."""
-    repos = fetch_all_repos()
-    all_commit_dates = pd.DataFrame(columns=["date"])
-
-    for repo in repos:
-        print(f"Fetching commits for repository: {repo}")
-        repo_commit_data = fetch_commit_data(repo)
-        all_commit_dates = pd.concat([all_commit_dates, repo_commit_data])
-
-    all_commit_dates["date"] = pd.to_datetime(all_commit_dates["date"]).dt.date
-    return all_commit_dates
-
-def calculate_metrics(df):
-    """Calculates commit intensity metrics based on commit data."""
+def calculate_dynamic_metrics(df):
+    """Calculates dynamic metrics based on recent commit data."""
     daily_commits = df['date'].value_counts().sort_index()
+    
+    # Recency-Weighted Pulse: Poisson-weighted commit frequency, emphasizing recent commits
+    weighted_counts = daily_commits * np.exp(-0.1 * np.arange(len(daily_commits)))
+    pulse = weighted_counts.mean()
 
-    # Pulse (Commit Frequency)
-    pulse = daily_commits.mean()
+    # Dynamic Activity Heat: Weighted by recent commit depth using EMA
+    heat_weighted = daily_commits.ewm(span=7, min_periods=1).mean()
+    activity_heat = heat_weighted.mean()
 
-    # Activity Heat (Commit Depth)
-    activity_heat = daily_commits.rolling(window=7, min_periods=1).sum().mean()
+    # Adaptive Strikes: Logarithmic scoring on time intervals to capture pace changes
+    time_intervals = daily_commits.index.to_series().diff().dt.days.fillna(1)
+    strikes = np.log1p(time_intervals).std()
 
-    # Strikes (Commit Variability)
-    strikes = daily_commits.std()
-
-    # Consistency Score (Commit Regularity)
-    consistency_score = 1 / (daily_commits.diff().std() + 1)
+    # Stochastic Consistency Score: Penalizes irregular gaps
+    gaps_penalty = 1 / (np.exp(time_intervals.mean()) + 1)
+    consistency_score = gaps_penalty * 100
 
     return pulse, activity_heat, strikes, consistency_score
 
-def plot_metrics(daily_commits, pulse, activity_heat, strikes, consistency_score):
-    """Generates and saves a plot of commit metrics over time."""
+def plot_dynamic_metrics(daily_commits, pulse, activity_heat, strikes, consistency_score):
+    """Generates and saves a plot of dynamic commit metrics over recent activity."""
     plt.figure(figsize=(12, 6))
     daily_commits.plot(kind="line", label="Daily Commits", color="steelblue")
-    plt.axhline(pulse, color="orange", linestyle="--", label="Pulse (Avg Frequency)")
-    plt.title("CodeAnvil Activity Metrics Across All Repositories")
+    plt.axhline(pulse, color="orange", linestyle="--", label="Recency-Weighted Pulse")
+    plt.title("CodeAnvil Recent Activity Metrics (Last 30 Days)")
     plt.xlabel("Date")
     plt.ylabel("Commits")
     plt.legend()
-    plt.savefig("codeanvil_activity.png")
+    plt.savefig("codeanvil_activity_dynamic.png")
     print(f"Metrics:\nPulse: {pulse}\nActivity Heat: {activity_heat}\nStrikes: {strikes}\nConsistency Score: {consistency_score}")
 
 def main():
-    all_commit_dates = aggregate_commit_data()
-    pulse, activity_heat, strikes, consistency_score = calculate_metrics(all_commit_dates)
-    daily_commits = all_commit_dates['date'].value_counts().sort_index()
-    plot_metrics(daily_commits, pulse, activity_heat, strikes, consistency_score)
+    # Collect recent activity data for the last week and month using events
+    recent_week = fetch_recent_commits_from_events(since_days=7)
+    recent_month = fetch_recent_commits_from_events(since_days=30)
+    
+    print("Weekly Metrics:")
+    weekly_pulse, weekly_heat, weekly_strikes, weekly_consistency = calculate_dynamic_metrics(recent_week)
+    plot_dynamic_metrics(recent_week['date'].value_counts(), weekly_pulse, weekly_heat, weekly_strikes, weekly_consistency)
+
+    print("Monthly Metrics:")
+    monthly_pulse, monthly_heat, monthly_strikes, monthly_consistency = calculate_dynamic_metrics(recent_month)
+    plot_dynamic_metrics(recent_month['date'].value_counts(), monthly_pulse, monthly_heat, monthly_strikes, monthly_consistency)
 
 if __name__ == "__main__":
     main()
