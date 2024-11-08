@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import datetime
 import numpy as np
-from .config import GITHUB_USER, TOKEN
+from config import GITHUB_USER, TOKEN
 
 def fetch_all_repos():
     """Fetches all repositories for the specified user."""
@@ -55,38 +55,37 @@ def calculate_metrics(df):
     """Calculates commit intensity metrics based on commit data."""
     daily_commits = df['date'].value_counts().sort_index()
 
-    # Hammer Blows (Commit Frequency)
-    hammer_blows = daily_commits.mean()
+    # Pulse (Commit Frequency)
+    pulse = daily_commits.mean()
 
     # Activity Heat (Commit Depth)
     activity_heat = daily_commits.rolling(window=7, min_periods=1).sum().mean()
 
-    # Anvil Strikes (Commit Variability)
-    anvil_strikes = daily_commits.std()
+    # Strikes (Commit Variability)
+    strikes = daily_commits.std()
 
     # Consistency Score (Commit Regularity)
     consistency_score = 1 / (daily_commits.diff().std() + 1)
 
-    return hammer_blows, activity_heat, anvil_strikes, consistency_score
+    return pulse, activity_heat, strikes, consistency_score
 
-def plot_metrics(daily_commits, hammer_blows, activity_heat, anvil_strikes, consistency_score):
+def plot_metrics(daily_commits, pulse, activity_heat, strikes, consistency_score):
     """Generates and saves a plot of commit metrics over time."""
     plt.figure(figsize=(12, 6))
     daily_commits.plot(kind="line", label="Daily Commits", color="steelblue")
-    plt.axhline(hammer_blows, color="orange", linestyle="--", label="Hammer Blows (Avg Frequency)")
+    plt.axhline(pulse, color="orange", linestyle="--", label="Pulse (Avg Frequency)")
     plt.title("CodeAnvil Activity Metrics Across All Repositories")
     plt.xlabel("Date")
     plt.ylabel("Commits")
     plt.legend()
     plt.savefig("codeanvil_activity.png")
-    print(f"Metrics:\nHammer Blows: {hammer_blows}\nActivity Heat: {activity_heat}\nAnvil Strikes: {anvil_strikes}\nConsistency Score: {consistency_score}")
+    print(f"Metrics:\nPulse: {pulse}\nActivity Heat: {activity_heat}\nStrikes: {strikes}\nConsistency Score: {consistency_score}")
 
 def main():
     all_commit_dates = aggregate_commit_data()
-    hammer_blows, activity_heat, anvil_strikes, consistency_score = calculate_metrics(all_commit_dates)
+    pulse, activity_heat, strikes, consistency_score = calculate_metrics(all_commit_dates)
     daily_commits = all_commit_dates['date'].value_counts().sort_index()
-    plot_metrics(daily_commits, hammer_blows, activity_heat, anvil_strikes, consistency_score)
+    plot_metrics(daily_commits, pulse, activity_heat, strikes, consistency_score)
 
 if __name__ == "__main__":
     main()
-
