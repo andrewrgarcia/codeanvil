@@ -77,7 +77,7 @@ def plot_metrics(metrics, title="Activity Metrics", figsize=(14, 8), show_plot=T
     )
     
     plt.title(f"CodeAnvil {title}")
-    plt.xlabel(f"Date\n{summary_text}", fontsize=10)
+    plt.xlabel(f"Date\n{summary_text}\nhttps://github.com/andrewrgarcia/codeanvil", fontsize=10)
     plt.ylabel("Commits")
     plt.legend()
     plt.xticks(rotation=45, ha='right', fontsize=8)
