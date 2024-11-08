@@ -9,6 +9,19 @@
 - **Strikes**: Tracks variability in commit frequency across repositories, capturing how much commit activity fluctuates over time.
 - **Consistency Score**: Shows the regularity of contributions over time.
 
+## Project Structure
+
+```plaintext
+./codeanvil/
+├── src.py                    # Contains main logic for fetching, aggregating, and analyzing commit data
+├── __init__.py               # Initializes the codeanvil package
+└── keys/
+    ├── config.py             # Stores user-configurable variables like GitHub username and token
+    └── __init__.py
+
+./script.py                   # Entry point script to execute CodeAnvil
+```
+
 ## Setup
 
 1. **Install Dependencies**: Make sure you have Python installed, then run:
@@ -18,7 +31,7 @@
    ```
 
 2. **Set Your GitHub Account Details**:
-   - Open `config.py`.
+   - Open `codeanvil/keys/config.py`.
    - Replace `GITHUB_USER` with your GitHub username.
    - (Optional) Add your GitHub token to `TOKEN` if you need access to private repos or higher rate limits. See instructions below on how to create a token.
 
@@ -40,12 +53,12 @@
    - Copy the token **immediately** and save it securely, as you won’t be able to see it again.
 
 5. **Add Token to CodeAnvil**:
-   - Open `config.py` and replace `TOKEN` with your new token. This will allow the script to authenticate with GitHub and retrieve commit data across all repositories.
+   - Open `codeanvil/keys/config.py` and replace `TOKEN` with your new token. This will allow the script to authenticate with GitHub and retrieve commit data across all repositories.
 
 3. **Run CodeAnvil**:
 
    ```bash
-   python codeanvil.py
+   python script.py
    ```
 
 4. **View Results**:

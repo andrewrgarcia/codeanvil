@@ -3,7 +3,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import datetime
 import numpy as np
-from config import GITHUB_USER, TOKEN
+# from config import GITHUB_USER, TOKEN
+from config_arg import GITHUB_USER, TOKEN
 
 def fetch_all_repos():
     """Fetches all repositories for the specified user."""
