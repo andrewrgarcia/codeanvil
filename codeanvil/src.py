@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 import numpy as np
-from codeanvil.keys.config_arg import GITHUB_USER, TOKEN
+from codeanvil.keys.config import GITHUB_USER, TOKEN
 import mplcyberpunk
 
 def fetch_recent_commits_from_events(since_days=30):
