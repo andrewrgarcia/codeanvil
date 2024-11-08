@@ -1,1 +1,1 @@
-from .src import weekly_activity, monthly_activity, custom_activity
+from .src import calculate_metrics, plot_metrics, activity_summary, weekly_activity, monthly_activity, custom_activity
