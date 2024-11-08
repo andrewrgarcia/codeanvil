@@ -1,4 +1,5 @@
-![](codeanvil.webp)
+
+<img src="img/codeanvil.webp" alt="Anvil in Grasslands" width="250" height="auto">
 
 # CodeAnvil - Track Your GitHub Activity Across All Repositories
 
