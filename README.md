@@ -4,9 +4,9 @@
 
 ## Features
 
-- **Hammer Blows**: Measures average commit frequency across all repositories.
+- **Pulse**: Measures the average commit frequency across all repositories, showing the "heartbeat" of activity.
 - **Activity Heat**: Calculates contribution depth based on rolling commits.
-- **Anvil Strikes**: Tracks variability in commit frequency across repositories.
+- **Strikes**: Tracks variability in commit frequency across repositories, capturing how much commit activity fluctuates over time.
 - **Consistency Score**: Shows the regularity of contributions over time.
 
 ## Setup
@@ -18,9 +18,29 @@
    ```
 
 2. **Set Your GitHub Account Details**:
-   - Open `codeanvil.py`.
+   - Open `config.py`.
    - Replace `GITHUB_USER` with your GitHub username.
-   - (Optional) Add your GitHub token to `TOKEN` if you need access to private repos or higher rate limits.
+   - (Optional) Add your GitHub token to `TOKEN` if you need access to private repos or higher rate limits. See instructions below on how to create a token.
+
+### Obtaining a GitHub Personal Access Token
+
+1. **Go to GitHub Settings**:
+   - Navigate to [GitHub’s Personal Access Tokens page](https://github.com/settings/tokens).
+   
+2. **Generate New Token**:
+   - Click on **"Generate new token"** in the top right corner.
+
+3. **Configure Token Permissions**:
+   - Enter a name for your token (e.g., "CodeAnvil Token").
+   - Set the expiration date as needed.
+   - Under **"Select scopes"**, check the box for `repo` (for accessing private repositories if needed) and `read:user` to read public repository data.
+   
+4. **Generate and Save the Token**:
+   - Click **"Generate token"** at the bottom of the page.
+   - Copy the token **immediately** and save it securely, as you won’t be able to see it again.
+
+5. **Add Token to CodeAnvil**:
+   - Open `config.py` and replace `TOKEN` with your new token. This will allow the script to authenticate with GitHub and retrieve commit data across all repositories.
 
 3. **Run CodeAnvil**:
 
@@ -43,4 +63,3 @@ CodeAnvil requires `requests`, `pandas`, `matplotlib`, and `numpy`.
 ## License
 
 This project is licensed under the MIT License.
-

@@ -3,10 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import datetime
 import numpy as np
-
-# User-configurable variables
-GITHUB_USER = "your-username"
-TOKEN = "your-github-token"  # GitHub personal access token (for private repositories and higher rate limits)
+from .config import GITHUB_USER, TOKEN
 
 def fetch_all_repos():
     """Fetches all repositories for the specified user."""
