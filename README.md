@@ -4,12 +4,11 @@
 
 ## Features
 
-![](codeanvil_activity_monthly_activity_metrics_for_andrewrgarcia.png)
-
 - **Pulse**: Measures the average commit frequency across all repositories, showing the "heartbeat" of activity.
 - **Activity Heat**: Calculates contribution depth based on rolling commits.
-- **Strikes**: Tracks variability in commit frequency across repositories, capturing how much commit activity fluctuates over time.
 - **Consistency Score**: Shows the regularity of contributions over time.
+
+![](img/codeanvil_activity_monthly_activity_metrics_for_andrewrgarcia.png)
 
 ## Project Structure
 
