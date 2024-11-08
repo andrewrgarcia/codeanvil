@@ -18,7 +18,6 @@ def fetch_recent_commits_from_events(since_days=30):
         events = response.json()
         
         for event in events:
-            # Filter for push events only
             if event["type"] == "PushEvent":
                 repo_name = event["repo"]["name"]
                 for commit in event["payload"]["commits"]:
@@ -27,7 +26,6 @@ def fetch_recent_commits_from_events(since_days=30):
                         return pd.DataFrame(recent_commits, columns=["repository", "date"])
                     recent_commits.append((repo_name, commit_date.date()))
 
-        # Pagination: Get the next page if available
         url = response.links.get('next', {}).get('url')
     
     return pd.DataFrame(recent_commits, columns=["repository", "date"])
@@ -37,78 +35,64 @@ def calculate_dynamic_metrics(df):
     daily_commits = df['date'].value_counts().sort_index()
     
     commit_speed = daily_commits * np.exp(-0.1 * np.arange(len(daily_commits)))
-
     commit_energy = daily_commits.ewm(span=7, min_periods=1).mean()
-
     time_gaps = daily_commits.index.to_series().diff().dt.days.fillna(1)
-
 
     fundamentals = {'daily_commits': daily_commits, 'commit_speed': commit_speed, 'commit_energy': commit_energy, 'time_gaps': time_gaps }
 
     metrics = fundamentals
-
-    metrics['pulse'] = fundamentals['commit_speed'].mean()              # Recency-Weighted Pulse: Poisson-weighted commit frequency, emphasizing recent commits
-
-    metrics['activity_heat'] = fundamentals['commit_energy'].mean()            # Dynamic Activity Heat: Weighted by recent commit depth using EMA
-
-    metrics['strikes'] = np.log1p(fundamentals['time_gaps']).std()         # Adaptive Strikes: Logarithmic scoring on time intervals to capture pace changes
-
+    metrics['pulse'] = fundamentals['commit_speed'].mean()
+    metrics['activity_heat'] = fundamentals['commit_energy'].mean()
+    metrics['strikes'] = np.log1p(fundamentals['time_gaps']).std()
     gaps_penalty = 1 / (np.exp(fundamentals['time_gaps'].mean()) + 1)
-
-    metrics['consistency_score'] = gaps_penalty * 100      # Stochastic Consistency Score: Penalizes irregular gaps
+    metrics['consistency_score'] = gaps_penalty * 100
 
     return metrics
 
-def plot_dynamic_metrics(metrics):
+def plot_dynamic_metrics(metrics, title="Activity Metrics"):
     """Generates and saves a plot of dynamic commit metrics over recent activity."""
     plt.figure(figsize=(12, 6))
-    metrics['daily_commits'].plot(kind="line", label="Daily Commits", color="steelblue")
-
-    metrics['commit_speed'].plot(kind="line", label="Daily Commits", color="steelblue")
-    metrics['commit_energy'].plot(kind="line", label="Daily Commits", color="steelblue")
-    metrics['time_gaps'].plot(kind="line", label="Daily Commits", color="steelblue")
-
-    # plt.axhline(pulse, color="orange", linestyle="--", label="Recency-Weighted Pulse")
-    plt.title("CodeAnvil Recent Activity Metrics (Last 30 Days)")
+    metrics['daily_commits'].plot(label="Daily Commits", linewidth=2, color="steelblue")
+    metrics['commit_speed'].plot(label="Commit Speed", linestyle="--")
+    metrics['commit_energy'].plot(label="Commit Energy", linestyle=":")
+    metrics['time_gaps'].plot(label="Time Gaps", linestyle="-.")
+    plt.axhline(metrics['pulse'], color="orange", linestyle="--", label="Pulse")
+    plt.title(f"CodeAnvil {title}")
     plt.xlabel("Date")
     plt.ylabel("Commits")
     plt.legend()
-    plt.savefig("codeanvil_activity_dynamic.png")
-    # print(f"Metrics:\nPulse: {pulse}\nActivity Heat: {activity_heat}\nStrikes: {strikes}\nConsistency Score: {consistency_score}")
+    plt.savefig(f"codeanvil_activity_{title.replace(' ', '_').lower()}.png")
+    print(f"{title} saved as codeanvil_activity_{title.replace(' ', '_').lower()}.png")
 
-def main(metrics):
-    # Collect recent activity data for the last week and month using events
+
+
+def display_activity_summary(df, period="Week"):
+    """Displays a summary of active repositories and commits for a specified period."""
+    print(f"\n{period} Activity Summary:")
+    print(df.groupby("repository")["date"].max())
+
+def weekly_activity():
+    """Fetch, analyze, and plot weekly GitHub activity metrics."""
     recent_week = fetch_recent_commits_from_events(since_days=7)
+    display_activity_summary(recent_week, "Weekly")
+    weekly_metrics = calculate_dynamic_metrics(recent_week)
+    plot_dynamic_metrics(weekly_metrics, "Weekly Activity Metrics")
+
+def monthly_activity():
+    """Fetch, analyze, and plot monthly GitHub activity metrics."""
     recent_month = fetch_recent_commits_from_events(since_days=30)
-    
-    # Display recent repositories and commits
-    print("\nRecent Activity Summary:")
-    print("\nLast Week's Active Repositories and Commits:")
-    print(recent_week.groupby("repository")["date"].max())
-    print("\nLast Month's Active Repositories and Commits:")
-    print(recent_month.groupby("repository")["date"].max())
+    display_activity_summary(recent_month, "Monthly")
+    monthly_metrics = calculate_dynamic_metrics(recent_month)
+    plot_dynamic_metrics(monthly_metrics, "Monthly Activity Metrics")
 
-    # Weekly metrics and plot
-    print("\nWeekly Metrics:")
-    metrics = calculate_dynamic_metrics(recent_week)
-    plot_dynamic_metrics(metrics)
-
-    # Monthly metrics and plot
-    print("\nMonthly Metrics:")
-    metrics = calculate_dynamic_metrics(recent_month)
-    plot_dynamic_metrics(metrics)
-
-    # Summary of calculated metrics
-    print("\nMetrics Summary:")
-    print(f"Weekly Pulse: {weekly_pulse:.2f}")
-    print(f"Weekly Activity Heat: {weekly_heat:.2f}")
-    print(f"Weekly Strikes: {weekly_strikes:.2f}")
-    print(f"Weekly Consistency Score: {weekly_consistency:.2f}")
-    print("\n")
-    print(f"Monthly Pulse: {monthly_pulse:.2f}")
-    print(f"Monthly Activity Heat: {monthly_heat:.2f}")
-    print(f"Monthly Strikes: {monthly_strikes:.2f}")
-    print(f"Monthly Consistency Score: {monthly_consistency:.2f}")
+def custom_activity(days):
+    """Fetch, analyze, and plot GitHub activity metrics for a custom time period."""
+    recent_custom = fetch_recent_commits_from_events(since_days=days)
+    display_activity_summary(recent_custom, f"Last {days} Days")
+    custom_metrics = calculate_dynamic_metrics(recent_custom)
+    plot_dynamic_metrics(custom_metrics, f"Activity Metrics (Last {days} Days)")
 
 if __name__ == "__main__":
-    main()
+    weekly_activity()
+    monthly_activity()
+    custom_activity(14)  # Example for custom analysis of the last 14 days

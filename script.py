@@ -1,3 +1,4 @@
-from codeanvil import main
+from codeanvil import custom_activity, weekly_activity, monthly_activity
 
-main()
+weekly_activity()
+monthly_activity()
