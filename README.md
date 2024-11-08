@@ -1,3 +1,5 @@
+![](codeanvil.webp)
+
 # CodeAnvil - Track Your GitHub Activity Across All Repositories
 
 **CodeAnvil** is a Python tool for analyzing and visualizing GitHub commit activity across all repositories in a user’s account. CodeAnvil calculates intensity metrics that reflect coding rhythm, depth, and regularity, and generates a visualization of your GitHub activity.
