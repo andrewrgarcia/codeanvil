@@ -51,13 +51,13 @@ With this setup, CodeAnvil will automatically generate an activity plot and comm
 
          - name: Run CodeAnvil Activity Metrics
            env:
-             GITHUB_USER: ${{ secrets.GITHUB_USER }}
-             TOKEN: ${{ secrets.GITHUB_TOKEN }}
+             USER_GITHUB: ${{ secrets.USER_GITHUB }}
+             TOKEN: ${{ secrets.TOKEN GITHUB }}
            run: python script.py
 
          - name: Commit and Push Plot
            env:
-             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+             TOKEN GITHUB: ${{ secrets.TOKEN GITHUB }}
            run: |
              git config --global user.name "github-actions[bot]"
              git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -67,8 +67,8 @@ With this setup, CodeAnvil will automatically generate an activity plot and comm
    ```
 
 2. **Set GitHub Secrets**: Go to your repository’s **Settings > Secrets and variables > Actions** and add:
-   - **`GITHUB_USER`**: Your GitHub username.
-   - **`GITHUB_TOKEN`**: A GitHub personal access token with `repo` and `read:user` permissions. For thorough details on how to generate the TOKEN jump to [Obtaining a GitHub Personal Access Token](#obtaining-a-github-personal-access-token)
+   - **`USER_GITHUB`**: Your GitHub username.
+   - **`TOKEN GITHUB`**: A GitHub personal access token with `repo` and `read:user` permissions. For thorough details on how to generate the TOKEN jump to [Obtaining a GitHub Personal Access Token](#obtaining-a-github-personal-access-token)
 
 
 3. **Embed the Plot in Your README**: Add the following line to your `README.md` to display the activity plot on your GitHub profile page:
@@ -110,7 +110,7 @@ If you prefer to run CodeAnvil locally, follow these steps:
 
 2. **Set Your GitHub Account Details**:
    - Open `codeanvil/keys/config.py`.
-   - Replace `GITHUB_USER` with your GitHub username.
+   - Replace `USER_GITHUB` with your GitHub username.
    - Optionally, add your GitHub token to `TOKEN` if you’re accessing private repositories.
 
 ### Obtaining a GitHub Personal Access Token

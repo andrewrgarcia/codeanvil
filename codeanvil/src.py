@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 import numpy as np
-from codeanvil.keys.config import GITHUB_USER, TOKEN
+from codeanvil.keys.config import USER_GITHUB, TOKEN
 import mplcyberpunk
 
 def fetch_recent_commits_from_events(since_days=30):
@@ -13,7 +13,7 @@ def fetch_recent_commits_from_events(since_days=30):
         print("Warning: GitHub Events API may not return complete data beyond 31 days.")
 
     headers = {"Authorization": f"token {TOKEN}"}
-    url = f"https://api.github.com/users/{GITHUB_USER}/events"
+    url = f"https://api.github.com/users/{USER_GITHUB}/events"
     recent_commits = []
     cutoff_date = datetime.now() - timedelta(days=since_days)
 
@@ -116,17 +116,17 @@ def activity_summary(df, metrics, period="Week"):
 def weekly_activity(show_plot=True):
     recent_week, weekly_metrics = calculate_metrics(since_days=7)
     activity_summary(recent_week, weekly_metrics, "Weekly")
-    plot_metrics(weekly_metrics, f"Weekly Activity Metrics for {GITHUB_USER}", show_plot=show_plot)
+    plot_metrics(weekly_metrics, f"Weekly Activity Metrics for {USER_GITHUB}", show_plot=show_plot)
 
 def monthly_activity(show_plot=True):
     recent_month, monthly_metrics = calculate_metrics(since_days=30)
     activity_summary(recent_month, monthly_metrics, "Monthly")
-    plot_metrics(monthly_metrics, f"Monthly Activity Metrics for {GITHUB_USER}", show_plot=show_plot)
+    plot_metrics(monthly_metrics, f"Monthly Activity Metrics for {USER_GITHUB}", show_plot=show_plot)
 
 def custom_activity(days, show_plot=True):
     recent_custom, custom_metrics = calculate_metrics(days)
     activity_summary(recent_custom, custom_metrics, f"Last {days} Days")
-    plot_metrics(custom_metrics, f"Activity Metrics for {GITHUB_USER}", show_plot=show_plot)
+    plot_metrics(custom_metrics, f"Activity Metrics for {USER_GITHUB}", show_plot=show_plot)
 
 if __name__ == "__main__":
     weekly_activity()

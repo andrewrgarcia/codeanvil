@@ -3,10 +3,10 @@ description: "Generates GitHub activity metrics and an activity plot for any Git
 author: "Your Name"
 
 inputs:
-  github_user:
+  user_github:
     description: "GitHub username to analyze"
     required: true
-  github_token:
+  token_github:
     description: "GitHub personal access token for authentication"
     required: true
   since_days:
@@ -36,8 +36,8 @@ runs:
 
     - name: "Run Activity Metrics Script"
       env:
-        GITHUB_USER: ${{ inputs.github_user }}
-        TOKEN: ${{ inputs.github_token }}
+        USER_GITHUB: ${{ inputs.user_github }}
+        TOKEN: ${{ inputs.token_github }}
         SINCE_DAYS: ${{ inputs.since_days }}
       run: |
         python script.py

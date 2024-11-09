@@ -6,13 +6,13 @@ import numpy as np
 from datetime import datetime, timedelta
 
 # Read input parameters from environment variables
-GITHUB_USER = os.getenv("GITHUB_USER")
+USER_GITHUB = os.getenv("USER_GITHUB")
 TOKEN = os.getenv("TOKEN")
 SINCE_DAYS = int(os.getenv("SINCE_DAYS", "30"))
 
 def fetch_recent_commits(since_days=30):
     headers = {"Authorization": f"token {TOKEN}"}
-    url = f"https://api.github.com/users/{GITHUB_USER}/events"
+    url = f"https://api.github.com/users/{USER_GITHUB}/events"
     cutoff_date = datetime.now() - timedelta(days=since_days)
     recent_commits = []
 
@@ -58,7 +58,7 @@ def plot_metrics(metrics):
     plt.figure(figsize=(14, 8))
     
     metrics['daily_commits'].plot(label="Daily Commits", linewidth=2)
-    plt.title(f"GitHub Activity Metrics for {GITHUB_USER}")
+    plt.title(f"GitHub Activity Metrics for {USER_GITHUB}")
     plt.xlabel("Date")
     plt.ylabel("Commits")
     plt.legend()
