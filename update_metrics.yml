@@ -1,0 +1,46 @@
+name: Update GitHub Activity Plot
+
+on:
+  schedule:
+    - cron: "0 0 * * *"  # Runs daily, adjust as needed
+  workflow_dispatch:  # Allows manual trigger
+
+permissions:
+  contents: write  # Required for pushing changes
+
+jobs:
+  update-activity:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          ref: activity-plots  # Check out the activity-plots branch
+          persist-credentials: false  # Required for setting up new Git credentials
+
+      - name: Set up Git Credentials
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git remote set-url origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+
+      - name: Install Dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run CodeAnvil Activity Metrics
+        env:
+          USER_GITHUB: ${{ secrets.USER_GITHUB }}
+          TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+        run: python script.py
+
+      - name: Commit and Push Plot
+        run: |
+          git add activity_plot.png
+          git commit -m "Update GitHub activity metrics plot" || echo "No changes to commit"
+          git push origin activity-plots  # Push to the activity-plots branch
